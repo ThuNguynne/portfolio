@@ -45,7 +45,7 @@ cd portfolio
 ## Contact
 
 * 📧 nguyenanhthuwu@gmail.com
-* 💼 [LinkedIn](https://www.linkedin.com/in/anhthu-nguyen)
+* 💼 [LinkedIn](https://www.linkedin.com/in/nguyenanhthuwu)
 * 💻 [GitHub Profile](https://github.com/ThuNguynne)
 
 ---

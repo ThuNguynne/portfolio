@@ -4,7 +4,7 @@
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
 
-> Personal portfolio site showcasing my BA / DA / UX academic projects.
+> Personal portfolio of Nguyen Anh Thu — Data & Business Analyst. Work experience at Opella plus BA / DA / UX academic projects.
 
 🌐 **Live site → [thunguynne.github.io/portfolio/](https://thunguynne.github.io/portfolio/)**
 
@@ -13,6 +13,8 @@
 ## What's in this portfolio
 
 * **Hero & About** — student profile, education, contact
+* **Work Experience** — Opella (Performance Analytics Intern) with 3 dashboard case studies, AVSE Global
+  * Dashboards are illustrative re-creations built with synthetic data — no company data is shown
 * **Skills & Tools** — Business Analysis, Data & Analytics, UX Research, Modeling, Soft Skills
 * **Academic Projects** — 4 end-to-end case studies:
   * HR Management System (Unilever Case Study) — BA + Database + C# WinForms + Power BI
@@ -26,8 +28,8 @@
 
 ## Tech
 
-* Single-file static HTML + CSS (vanilla, no framework)
-* Embedded SVG icons & inline assets — works fully offline
+* Static HTML + CSS (vanilla, no framework)
+* Images and fonts in `assets/`
 * Hosted on **GitHub Pages**
 
 ---

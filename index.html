@@ -156,6 +156,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
+html, body { overflow-x: clip; }
 body {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);
@@ -200,6 +201,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
 
 /* ── HERO ── */
 .hero {
+  position: relative; isolation: isolate;
   padding: 5rem 0 4rem;
   display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: center;
 }
@@ -231,7 +233,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
   display: inline-flex; align-items: center; gap: .45rem;
   padding: .75rem 1.3rem; border-radius: 8px;
   font-size: .85rem; font-weight: 600; font-family: inherit;
-  border: 1.5px solid transparent; cursor: pointer; transition: .25s;
+  border: 1.5px solid transparent; cursor: pointer; transition: background .25s, border-color .25s, color .25s, transform .25s;
   text-decoration: none;
 }
 .btn-primary { background: var(--ink); color: #fff; border-color: var(--ink); }
@@ -410,12 +412,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
 .pc-img-sub-cap { font-size: .65rem; color: var(--ink-muted); font-style: italic; text-align: center; margin-top: 4px; line-height: 1.3; }
 
 /* Card entry animation */
-.proj-card {
-  opacity: 0;
-  transform: translateY(22px);
-  transition: opacity .4s ease-out, transform .4s ease-out, box-shadow .25s;
-}
-.proj-card.card-visible { opacity: 1; transform: translateY(0); }
+.proj-card { transition: box-shadow .25s; }
 
 @media (max-width: 520px) {
   .pc-img-pair { grid-template-columns: 1fr; }
@@ -568,9 +565,17 @@ footer {
   border-top: 1px solid var(--border-soft); max-width: 980px; margin: 0 auto;
 }
 
+/* ── HERO 3D ── */
+.hero-3d { position: absolute; top: 0; bottom: -2rem; left: calc(50% - 50vw); right: calc(50% - 50vw); z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1.2s ease;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 38%, rgba(0,0,0,.6) 60%, #000 78%), linear-gradient(180deg, #000 72%, transparent);
+  -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent 0%, transparent 38%, rgba(0,0,0,.6) 60%, #000 78%); }
+.hero-3d.ready { opacity: 1; }
+.hero-3d canvas { display: block; width: 100%; height: 100%; }
+@media (max-width: 860px) { .hero-3d { opacity: 0 !important; display: none; } }
+
 /* ── REVEAL ── */
-.reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; }
-.reveal.in { opacity: 1; transform: translateY(0); }
+.scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); z-index: 200; pointer-events: none; }
+.edu-bar-fill { transition: none; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 860px) {
@@ -611,6 +616,7 @@ footer {
 </head>
 <body>
 
+<div class="scroll-progress" aria-hidden="true"></div>
 <nav>
   <span class="nav-name"><span class="nav-dot"></span> Nguyen Anh Thu</span>
   <ul class="nav-links">
@@ -640,6 +646,7 @@ footer {
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-3d" aria-hidden="true"></div>
   <div>
     <div class="hero-eyebrow">Graduating 04/2027 · Ho Chi Minh City</div>
     <h1>Data &amp; Business<br><em>Analyst</em></h1>
@@ -1121,26 +1128,80 @@ footer {
 
 <footer>Nguyen Anh Thu · 2026 · Dashboards in the Experience section use synthetic data only.</footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
-// Reveal on scroll
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }});
-}, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+// GSAP animations — content stays visible if GSAP fails to load or the user prefers reduced motion
+(function () {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.gsap || !window.ScrollTrigger || reduce) return;
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.defaults({ ease: 'power3.out', duration: .8 });
 
-// Project cards — staggered fade-in
-const cardIO = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const cards = [...document.querySelectorAll('.proj-card')];
-      const i = cards.indexOf(e.target);
-      setTimeout(() => e.target.classList.add('card-visible'), i * 80);
-      cardIO.unobserve(e.target);
-    }
+  // Scroll progress bar
+  gsap.to('.scroll-progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: .3 } });
+
+  // Hero intro
+  const tl = gsap.timeline();
+  tl.from('.hero-eyebrow', { y: 16, opacity: 0, duration: .6 })
+    .from('.hero h1', { y: 40, opacity: 0, duration: 1 }, '-=.3')
+    .from('.hero-desc', { y: 24, opacity: 0 }, '-=.6')
+    .from('.hero-ctas > *', { y: 16, opacity: 0, stagger: .08, duration: .5, clearProps: 'transform,opacity' }, '-=.5')
+    .from('.hero-card', { x: 40, opacity: 0, rotate: 1.5, duration: 1 }, '-=.9');
+
+  // Count-up hero stats
+  document.querySelectorAll('.hc-stat-num').forEach((el) => {
+    const end = parseFloat(el.textContent); const dec = (el.textContent.split('.')[1] || '').length;
+    const pad = el.textContent.length; const o = { v: 0 };
+    tl.to(o, { v: end, duration: 1.2, ease: 'power2.out', onUpdate: () => {
+      const t = o.v.toFixed(dec); el.textContent = dec ? t : t.padStart(pad, '0');
+    } }, '-=1');
   });
-}, { threshold: .06, rootMargin: '0px 0px -30px 0px' });
-document.querySelectorAll('.proj-card').forEach(el => cardIO.observe(el));
 
+  // Section headers
+  gsap.utils.toArray('.sec-header, .contact-label').forEach((h) => {
+    gsap.from(h.children.length ? h.children : h, { y: 30, opacity: 0, stagger: .1, scrollTrigger: { trigger: h, start: 'top 88%' } });
+  });
+
+  // Cards appear in batches as they scroll into view
+  const batch = (sel, vars) => ScrollTrigger.batch(sel, {
+    start: 'top 90%', once: true,
+    onEnter: (els) => gsap.fromTo(els, { y: 40, opacity: 0 }, Object.assign({ y: 0, opacity: 1, stagger: .12, overwrite: true }, vars))
+  });
+  gsap.set('.exp-head, .proj-card, .skill-group, .edu-card, .ach-card, .mock-note, .about-text p, .info-card', { opacity: 0 });
+  batch('.exp-head, .proj-card, .mock-note');
+  batch('.skill-group, .edu-card, .ach-card', { duration: .6 });
+  batch('.about-text p, .info-card', { duration: .7 });
+
+  // Case-study steps and impact chips
+  gsap.utils.toArray('.proj-card').forEach((card) => {
+    const st = { trigger: card, start: 'top 75%' };
+    const steps = card.querySelectorAll('.case-step'), chips = card.querySelectorAll('.pc-impact');
+    if (steps.length) gsap.from(steps, { y: 20, opacity: 0, stagger: .12, duration: .6, scrollTrigger: st });
+    if (chips.length) gsap.from(chips, { scale: .85, opacity: 0, stagger: .06, duration: .5, ease: 'back.out(2)', scrollTrigger: st });
+  });
+
+  // Dashboard images: reveal + gentle zoom while scrolling
+  gsap.utils.toArray('.pc-img-hero').forEach((box) => {
+    const img = box.querySelector('img'); if (!img) return;
+    gsap.from(box, { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'power4.out', scrollTrigger: { trigger: box, start: 'top 85%' } });
+    gsap.fromTo(img, { scale: 1.08 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: box, start: 'top bottom', end: 'bottom top', scrub: true } });
+  });
+
+  // GPA bars fill
+  gsap.utils.toArray('.edu-bar-fill').forEach((bar) => {
+    gsap.from(bar, { width: 0, duration: 1.4, ease: 'power2.out', scrollTrigger: { trigger: bar, start: 'top 90%' } });
+  });
+
+  // Skill tags pop
+  gsap.utils.toArray('.sg-tags').forEach((g) => {
+    gsap.from(g.children, { y: 10, opacity: 0, stagger: .025, duration: .4, scrollTrigger: { trigger: g, start: 'top 88%' } });
+  });
+
+  window.addEventListener('load', () => ScrollTrigger.refresh());
+})();
+
+// (three.js hero background is loaded as a module below)
 // Active nav highlight
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
@@ -1158,5 +1219,83 @@ const sio = new IntersectionObserver((entries) => {
 sections.forEach(s => sio.observe(s));
 </script>
 
+<script type="module">
+// Hero background: a slowly breathing 3D "bar chart field" — decorative only.
+// Skipped on small screens, when WebGL is unavailable, and paused when the hero is off-screen.
+const host = document.querySelector('.hero-3d');
+const small = window.matchMedia('(max-width: 860px)').matches;
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (host && !small) {
+  try {
+    const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js');
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    host.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0xf5f6f9, 14, 34);
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+    camera.position.set(17, 13, 20);
+    camera.lookAt(2, 1, 0);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xdfe6e2, 1.6));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.4); sun.position.set(6, 12, 8); scene.add(sun);
+
+    // Grid of bars (instanced = one draw call)
+    const COLS = 20, ROWS = 12, GAP = 0.7, W = 0.46;
+    const geo = new THREE.BoxGeometry(W, 1, W); geo.translate(0, 0.5, 0);
+    const mat = new THREE.MeshStandardMaterial({ roughness: .55, metalness: .05 });
+    const bars = new THREE.InstancedMesh(geo, mat, COLS * ROWS);
+    const lo = new THREE.Color('#cfeadd'), hi = new THREE.Color('#1f8a5c'), tmpC = new THREE.Color();
+    const m4 = new THREE.Matrix4(), pos = new THREE.Vector3(), quat = new THREE.Quaternion(), scl = new THREE.Vector3();
+    const cells = [];
+    for (let i = 0; i < COLS; i++) for (let j = 0; j < ROWS; j++) {
+      cells.push({ x: (i - COLS / 2) * GAP + 7, z: (j - ROWS / 2) * GAP, seed: Math.random() * 6.28, amp: .5 + Math.random() * .9 });
+    }
+    scene.add(bars);
+
+    // Thin baseline grid for a "chart" feel
+    const grid = new THREE.GridHelper(COLS * GAP + 2, COLS + 2, 0xd5dbe3, 0xe4e8ee);
+    grid.position.set(7, 0.001, 0); scene.add(grid);
+
+    let mx = 0, my = 0, tx = 0, ty = 0;
+    window.addEventListener('pointermove', (e) => { tx = (e.clientX / innerWidth - .5); ty = (e.clientY / innerHeight - .5); }, { passive: true });
+
+    function resize() {
+      const w = host.clientWidth, h = host.clientHeight;
+      renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+    }
+    resize(); new ResizeObserver(resize).observe(host);
+
+    function frame(t) {
+      const time = t * 0.00045;
+      cells.forEach((c, k) => {
+        const wave = Math.sin(c.x * .55 + time * 2) * Math.cos(c.z * .7 + time * 1.4);
+        const h = 0.12 + (wave * .5 + .5) * 1.9 * c.amp + Math.sin(time * 3 + c.seed) * .12;
+        pos.set(c.x, 0, c.z); scl.set(1, Math.max(.05, h), 1);
+        m4.compose(pos, quat, scl); bars.setMatrixAt(k, m4);
+        bars.setColorAt(k, tmpC.copy(lo).lerp(hi, Math.min(1, h / 3)));
+      });
+      bars.instanceMatrix.needsUpdate = true; bars.instanceColor.needsUpdate = true;
+      mx += (tx - mx) * .04; my += (ty - my) * .04;
+      camera.position.set(17 + mx * 3, 13 - my * 2, 20);
+      camera.lookAt(2, 1, 0);
+      renderer.render(scene, camera);
+    }
+
+    let raf = 0, visible = true;
+    const loop = (t) => { frame(t); raf = requestAnimationFrame(loop); };
+    new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (reduce) return;
+      if (visible && !raf) raf = requestAnimationFrame(loop);
+      if (!visible && raf) { cancelAnimationFrame(raf); raf = 0; }
+    }).observe(host);
+    frame(2000);                       // one static frame first (also the reduced-motion view)
+    if (!reduce) raf = requestAnimationFrame(loop);
+    requestAnimationFrame(() => host.classList.add('ready'));
+  } catch (err) { host.remove(); }
+}
+</script>
 
 </body></html>

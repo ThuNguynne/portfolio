@@ -185,7 +185,7 @@ nav {
 .nav-links { display: flex; gap: .15rem; list-style: none; }
 .nav-links a {
   font-size: .78rem; font-weight: 500; color: var(--ink-muted);
-  padding: .4rem .7rem; border-radius: 6px; transition: .2s;
+  padding: .4rem .7rem; border-radius: 6px; transition: color .2s, background-color .2s, border-color .2s, box-shadow .2s;
 }
 .nav-links a:hover { color: var(--ink); background: var(--bg); }
 .nav-links a.cta {
@@ -317,7 +317,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
 .skill-group {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 1.3rem; box-shadow: var(--shadow-sm);
-  transition: .25s;
+  transition: color .25s, background-color .25s, border-color .25s, box-shadow .25s;
 }
 .skill-group:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
 .sg-header { display: flex; align-items: center; gap: .6rem; margin-bottom: 1rem; }
@@ -332,7 +332,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
   font-size: .72rem; padding: .25rem .55rem;
   background: var(--bg); border: 1px solid var(--border-soft);
   border-radius: 5px; color: var(--ink-soft); font-weight: 500;
-  transition: .15s;
+  transition: color .15s, background-color .15s, border-color .15s, box-shadow .15s;
 }
 .sg-tag:hover { background: var(--accent-light); color: var(--accent-dark); border-color: var(--accent-light); }
 
@@ -341,7 +341,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
 .proj-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 1.6rem;
-  box-shadow: var(--shadow-sm); transition: .25s;
+  box-shadow: var(--shadow-sm); transition: color .25s, background-color .25s, border-color .25s, box-shadow .25s;
 }
 .proj-card:hover { box-shadow: var(--shadow); }
 .pc-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .3rem; }
@@ -431,7 +431,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
   padding: .4rem .75rem; border-radius: 6px;
   font-size: .74rem; font-weight: 600;
   color: var(--ink); background: var(--bg); border: 1px solid var(--border);
-  transition: .2s; text-decoration: none;
+  transition: color .2s, background-color .2s, border-color .2s, box-shadow .2s; text-decoration: none;
 }
 .pc-link:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
 
@@ -456,7 +456,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
 .edu-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 1.5rem;
-  box-shadow: var(--shadow-sm); transition: .25s;
+  box-shadow: var(--shadow-sm); transition: color .25s, background-color .25s, border-color .25s, box-shadow .25s;
   display: flex; flex-direction: column;
 }
 .edu-card.main { border: 2px solid var(--accent); background: linear-gradient(135deg, #fff 0%, var(--accent-light) 100%); }
@@ -492,7 +492,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
   background: var(--surface); border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
   border-radius: var(--radius); padding: 1rem 1.1rem;
-  transition: .25s;
+  transition: color .25s, background-color .25s, border-color .25s, box-shadow .25s;
 }
 .ach-card:nth-child(1) { border-left-color: var(--gold); }
 .ach-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
@@ -542,7 +542,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
   display: flex; align-items: center; gap: .9rem;
   padding: .9rem 1.1rem; border: 1px solid rgba(255,255,255,.1);
   border-radius: 10px; color: rgba(255,255,255,.8); font-size: .84rem;
-  font-weight: 500; transition: .2s; text-decoration: none;
+  font-weight: 500; transition: color .2s, background-color .2s, border-color .2s, box-shadow .2s; text-decoration: none;
   background: rgba(255,255,255,.03);
 }
 .c-link:hover { border-color: oklch(0.6 0.14 160); color: #fff; background: rgba(116,198,157,.08); }
@@ -556,7 +556,7 @@ section { padding: 4.5rem 0; scroll-margin-top: 60px; }
 .c-link-label { font-size: .58rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: .15rem; }
 .c-link:hover .c-link-label { color: oklch(0.72 0.14 160); }
 .c-link-val { font-size: .88rem; }
-.c-link-arr { color: rgba(255,255,255,.25); font-size: .9rem; transition: .2s; }
+.c-link-arr { color: rgba(255,255,255,.25); font-size: .9rem; transition: color .2s, background-color .2s, border-color .2s, box-shadow .2s; }
 .c-link:hover .c-link-arr { color: oklch(0.78 0.14 160); transform: translateX(3px); }
 
 /* ── FOOTER ── */
@@ -1160,13 +1160,13 @@ footer {
 
   // Section headers
   gsap.utils.toArray('.sec-header, .contact-label').forEach((h) => {
-    gsap.from(h.children.length ? h.children : h, { y: 30, opacity: 0, stagger: .1, scrollTrigger: { trigger: h, start: 'top 88%' } });
+    gsap.from(h.children.length ? h.children : h, { y: 30, opacity: 0, stagger: .1, clearProps: 'transform,opacity', scrollTrigger: { trigger: h, start: 'top 88%' } });
   });
 
   // Cards appear in batches as they scroll into view
   const batch = (sel, vars) => ScrollTrigger.batch(sel, {
     start: 'top 90%', once: true,
-    onEnter: (els) => gsap.fromTo(els, { y: 40, opacity: 0 }, Object.assign({ y: 0, opacity: 1, stagger: .12, overwrite: true }, vars))
+    onEnter: (els) => gsap.fromTo(els, { y: 40, opacity: 0 }, Object.assign({ y: 0, opacity: 1, stagger: .12, overwrite: true, clearProps: 'transform,opacity' }, vars))
   });
   gsap.set('.exp-head, .proj-card, .skill-group, .edu-card, .ach-card, .mock-note, .about-text p, .info-card', { opacity: 0 });
   batch('.exp-head, .proj-card, .mock-note');
@@ -1195,7 +1195,7 @@ footer {
 
   // Skill tags pop
   gsap.utils.toArray('.sg-tags').forEach((g) => {
-    gsap.from(g.children, { y: 10, opacity: 0, stagger: .025, duration: .4, scrollTrigger: { trigger: g, start: 'top 88%' } });
+    gsap.from(g.children, { y: 10, opacity: 0, stagger: .025, duration: .4, clearProps: 'transform,opacity', scrollTrigger: { trigger: g, start: 'top 88%' } });
   });
 
   window.addEventListener('load', () => ScrollTrigger.refresh());
